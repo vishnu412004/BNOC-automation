@@ -132,9 +132,8 @@ function Dashboard() {
 
     const subject = `[SEV${safe(
       incidentData.severity,
-    )}] ${safe(incidentData.primary_market)} - BNOC Outage - ${
-      incidentData.number
-    }`;
+    )}] ${safe(incidentData.primary_market)} - BNOC Outage - ${incidentData.number
+      }`;
 
     const body = `
 BNOC OUTAGE NOTIFICATION
@@ -326,23 +325,7 @@ ${safe(incidentData.number)}
                 )}
               </Collapsible>
 
-              <Collapsible
-                title="Troubleshooting / Engineer Activity"
-                color="purple"
-              >
-                {incidentData.work_notes?.length > 0 ? (
-                  incidentData.work_notes.map((note, i) => (
-                    <div
-                      key={i}
-                      className="mb-3 p-3 bg-purple-50 rounded-md transition hover:scale-[1.01]"
-                    >
-                      {safe(note)}
-                    </div>
-                  ))
-                ) : (
-                  <p>No work notes available</p>
-                )}
-              </Collapsible>
+
 
               <Collapsible title="Root Cause" color="yellow">
                 {getRootCause(incidentData)}
