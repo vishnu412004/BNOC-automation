@@ -15,7 +15,7 @@ function IncidentTimeline() {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          `http://localhost:5000/api/incident/${incidentNumber}`,
+          `/api/incident/${incidentNumber}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

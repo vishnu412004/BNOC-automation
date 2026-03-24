@@ -341,6 +341,19 @@ Respond like a real network engineer helping another engineer during an outage.
 });
 
 /* ============================================================
+   STATIC FILES & SPA ROUTING
+============================================================ */
+const path = require("path");
+
+// Serve static files from React build
+app.use(express.static(path.join(__dirname, "../build")));
+
+// Catch-all route for SPA: serve index.html for all non-API routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build/index.html"));
+});
+
+/* ============================================================
    HEALTH CHECK
 ============================================================ */
 app.get("/", (req, res) => {

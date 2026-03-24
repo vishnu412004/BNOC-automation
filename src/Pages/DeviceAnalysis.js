@@ -10,28 +10,28 @@ function DeviceAnalysis() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchDeviceHistory = async (selectedDays) => {
-    setLoading(true);
-
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch(
-        `http://localhost:5000/api/device-history/${deviceSysId}/${selectedDays}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-
-      const result = await response.json();
-      setData(result);
-      setLoading(false);
-    } catch {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchDeviceHistory = async (selectedDays) => {
+      setLoading(true);
+
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+          `/api/device-history/${deviceSysId}/${selectedDays}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        const result = await response.json();
+        setData(result);
+        setLoading(false);
+      } catch {
+        setLoading(false);
+      }
+    };
+
     fetchDeviceHistory(days);
   }, [deviceSysId, days]);
 

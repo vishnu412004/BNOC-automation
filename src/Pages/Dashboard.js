@@ -63,7 +63,7 @@ function Dashboard() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:5000/api/incident/${incidentNumber}`,
+        `/api/incident/${incidentNumber}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -132,8 +132,9 @@ function Dashboard() {
 
     const subject = `[SEV${safe(
       incidentData.severity,
-    )}] ${safe(incidentData.primary_market)} - BNOC Outage - ${incidentData.number
-      }`;
+    )}] ${safe(incidentData.primary_market)} - BNOC Outage - ${
+      incidentData.number
+    }`;
 
     const body = `
 BNOC OUTAGE NOTIFICATION
@@ -324,8 +325,6 @@ ${safe(incidentData.number)}
                   <p>No impacted services</p>
                 )}
               </Collapsible>
-
-
 
               <Collapsible title="Root Cause" color="yellow">
                 {getRootCause(incidentData)}
