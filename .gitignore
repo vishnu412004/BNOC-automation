@@ -49,3 +49,5 @@ coverage/
 # =========================
 *.log
 *.tmp
+bnoc-backend.yaml
+bnoc-frontend.yaml
