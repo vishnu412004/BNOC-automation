@@ -1,6 +1,7 @@
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import appAssets from "../Config/appAssets";
+import API_BASE_URL from "../Config/apiConfig";
 
 function AIAssistant() {
   const { incidentNumber } = useParams();
@@ -66,7 +67,7 @@ function AIAssistant() {
     setMessages((prev) => [...prev, { role: "user", content: q }]);
 
     try {
-      const response = await fetch("/api/ai-chat", {
+      const response = await fetch(`${API_BASE_URL}/api/ai-chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

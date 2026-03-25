@@ -1,0 +1,24 @@
+apiVersion: cnap.comcast.net/v1
+kind: WebService
+metadata:
+  name: bnoc-frontend
+  namespace: your-namespace
+spec:
+  image: hub.comcast.net/your-team/bnoc-frontend:latest
+  ports:
+    - containerPort: 80
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 80
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  startupProbe:
+    httpGet:
+      path: /
+      port: 80
+    initialDelaySeconds: 60
+    periodSeconds: 10
+  env:
+    - name: REACT_APP_API_BASE_URL
+      value: "https://your-backend-url"

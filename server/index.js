@@ -348,8 +348,11 @@ const path = require("path");
 // Serve static files from React build
 app.use(express.static(path.join(__dirname, "../build")));
 
-// Catch-all route for SPA: serve index.html for all non-API routes
-app.get("*", (req, res) => {
+// Catch-all handler for SPA: serve index.html for all non-API routes
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api') || req.path === '/') {
+    return next();
+  }
   res.sendFile(path.join(__dirname, "../build/index.html"));
 });
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import appAssets from "../Config/appAssets";
+import API_BASE_URL from "../Config/apiConfig";
 
 function DeviceAnalysis() {
   const { deviceSysId } = useParams();
@@ -18,7 +19,7 @@ function DeviceAnalysis() {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          `/api/device-history/${deviceSysId}/${selectedDays}`,
+          `${API_BASE_URL}/api/device-history/${deviceSysId}/${selectedDays}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },

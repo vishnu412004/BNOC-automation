@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import appAssets from "../Config/appAssets";
+import API_BASE_URL from "../Config/apiConfig";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -63,7 +64,7 @@ function Dashboard() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `/api/incident/${incidentNumber}`,
+        `${API_BASE_URL}/api/incident/${incidentNumber}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },

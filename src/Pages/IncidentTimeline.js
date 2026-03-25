@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import appAssets from "../Config/appAssets";
+import API_BASE_URL from "../Config/apiConfig";
 
 function IncidentTimeline() {
   const { incidentNumber } = useParams();
@@ -15,7 +16,7 @@ function IncidentTimeline() {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          `/api/incident/${incidentNumber}`,
+          `${API_BASE_URL}/api/incident/${incidentNumber}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
