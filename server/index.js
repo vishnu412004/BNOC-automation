@@ -5,10 +5,14 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+app.get("/myAppHealth", (req, res) => {
+  res.send("OK");
+});
 
 /* ============================================================
    OPTIONAL ENV CHECK
@@ -348,11 +352,8 @@ const path = require("path");
 // Serve static files from React build
 app.use(express.static(path.join(__dirname, "../build")));
 
-// Catch-all handler for SPA: serve index.html for all non-API routes
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api') || req.path === '/') {
-    return next();
-  }
+// ✅ Catch-all (VERY IMPORTANT - LAST)
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, "../build/index.html"));
 });
 
