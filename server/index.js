@@ -82,18 +82,18 @@ async function getAccessToken() {
   }
 
   try {
-    const url = `${process.env.SAT_URL}?capabilities=${encodeURIComponent(
-      process.env.SAT_SCOPE,
-    )}`;
-
-    const response = await axios.post(url, null, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "X-Client-Id": process.env.SAT_CLIENT_ID,
-        "X-Client-Secret": process.env.SAT_CLIENT_SECRET,
-      },
-      timeout: 10000,
-    });
+    const response = await axios.post(
+      process.env.SAT_URL,
+      `grant_type=client_credentials&scope=${process.env.SAT_SCOPE}`,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Client-Id": process.env.SAT_CLIENT_ID,
+          "X-Client-Secret": process.env.SAT_CLIENT_SECRET,
+        },
+        timeout: 10000,
+      }
+    );
 
     cachedSatToken = response.data.access_token;
     satTokenExpiry = Date.now() + (response.data.expires_in - 300) * 1000;
@@ -102,7 +102,7 @@ async function getAccessToken() {
 
     return cachedSatToken;
   } catch (error) {
-    console.error("❌ SAT Token Error:", error.message);
+    console.error("❌ SAT FULL ERROR:", error.response?.data);
     throw error;
   }
 }
