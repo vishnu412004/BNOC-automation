@@ -9,9 +9,13 @@ function IncidentTimeline() {
 
   const [incident, setIncident] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchIncident = async () => {
+      setLoading(true);
+      setError("");
+
       try {
         const token = localStorage.getItem("token");
 
@@ -23,9 +27,18 @@ function IncidentTimeline() {
         );
 
         const data = await response.json();
+
+        if (!response.ok) {
+          setIncident(null);
+          setError(data.message || data.error || "Failed to load timeline");
+          setLoading(false);
+          return;
+        }
+
         setIncident(data.incident);
         setLoading(false);
       } catch {
+        setError("Server error while loading timeline");
         setLoading(false);
       }
     };
@@ -111,6 +124,10 @@ function IncidentTimeline() {
 
             {loading ? (
               <p className="text-blue-600 animate-pulse">Loading timeline...</p>
+            ) : error ? (
+              <p className="text-red-600">{error}</p>
+            ) : timeline.length === 0 ? (
+              <p className="text-gray-500">No timeline events found for this incident.</p>
             ) : (
               <div className="relative">
 

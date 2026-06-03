@@ -9,6 +9,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Clear fields when page loads
   useEffect(() => {
@@ -19,6 +20,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/login`, {
@@ -33,6 +35,7 @@ function Login() {
 
       if (!response.ok) {
         setError(data.message);
+        setLoading(false);
         return;
       }
 
@@ -41,6 +44,7 @@ function Login() {
 
     } catch (err) {
       setError("Server error");
+      setLoading(false);
     }
   };
 
@@ -87,9 +91,13 @@ function Login() {
 
           <button
             type="submit"
-            className="w-full bg-blue-700 hover:bg-blue-800 text-white py-2 rounded-lg font-semibold transition transform hover:scale-105 active:scale-95 duration-200"
+            disabled={loading}
+            className="w-full bg-blue-700 hover:bg-blue-800 disabled:bg-blue-300 disabled:cursor-not-allowed text-white py-2 rounded-lg font-semibold transition transform hover:scale-105 active:scale-95 duration-200 flex items-center justify-center gap-2"
           >
-            Sign In
+            {loading && (
+              <span className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+            )}
+            {loading ? "Signing in..." : "Sign In"}
           </button>
 
         </form>

@@ -6,6 +6,16 @@ const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const requiredEnvVars = [
+  "ALLOWED_USERS",
+  "TEAM_PASSWORD",
+  "JWT_SECRET",
+  "SAT_URL",
+  "SAT_SCOPE",
+  "SAT_CLIENT_ID",
+  "SAT_CLIENT_SECRET",
+  "INCIDENT_API_URL",
+];
 
 app.use(cors());
 app.use(express.json());
@@ -14,11 +24,19 @@ app.get("/myAppHealth", (req, res) => {
   res.send("OK");
 });
 
+app.get("/", (req, res) => {
+  res.send("BNOC Automation Backend Running");
+});
+
 /* ============================================================
    OPTIONAL ENV CHECK
 ============================================================ */
-if (!process.env.SAT_URL || !process.env.INCIDENT_API_URL) {
-  console.warn("⚠️ Warning: Some environment variables may be missing.");
+const missingEnvVars = requiredEnvVars.filter((name) => !process.env[name]);
+
+if (missingEnvVars.length) {
+  console.warn(
+    `Warning: Missing environment variables: ${missingEnvVars.join(", ")}`,
+  );
 }
 
 /* ============================================================
@@ -29,6 +47,16 @@ app.post("/api/login", (req, res) => {
 
   if (!email || !password) {
     return res.status(400).json({ message: "All fields required" });
+  }
+
+  if (
+    !process.env.ALLOWED_USERS ||
+    !process.env.TEAM_PASSWORD ||
+    !process.env.JWT_SECRET
+  ) {
+    return res.status(500).json({
+      message: "Authentication is not configured",
+    });
   }
 
   const allowedUsers = process.env.ALLOWED_USERS.split(",").map((e) =>
@@ -272,78 +300,6 @@ app.get(
   },
 );
 
-const Groq = require("groq-sdk");
-
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
-app.post("/api/ai-chat", authenticateToken, async (req, res) => {
-  try {
-    const {
-      incident,
-      device,
-      description,
-      severity,
-      priority,
-      serviceImpact,
-      resolution,
-      engineer,
-      question,
-    } = req.body;
-
-    const prompt = `
-You are a senior BNOC (Business Network Operations Center) network engineer assistant.
-
-Your job is to help engineers troubleshoot incidents.
-
-Incident Context:
-Incident Number: ${incident}
-Device: ${device}
-Description: ${description}
-Severity: ${severity}
-Priority: ${priority}
-Service Impact: ${serviceImpact}
-Assigned Engineer: ${engineer}
-Resolution Notes: ${resolution}
-
-Engineer Question:
-${question}
-
-Instructions:
-
-• Focus primarily on answering the engineer's question.
-• Use the incident context only if it helps explain the issue.
-• Do NOT generate unnecessary sections.
-• Keep answers clear and practical.
-• Use bullet points where helpful.
-• Provide commands if troubleshooting is involved.
-• Do not ask follow-up questions.
-
-Respond like a real network engineer helping another engineer during an outage.
-`;
-
-    const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful BNOC networking assistant.",
-        },
-        { role: "user", content: prompt },
-      ],
-      temperature: 0.3,
-    });
-
-    res.json({
-      answer: response.choices[0].message.content,
-    });
-  } catch (error) {
-    console.error("AI Error:", error.message);
-    res.status(500).json({ error: "AI request failed" });
-  }
-});
-
 /* ============================================================
    STATIC FILES & SPA ROUTING
 ============================================================ */
@@ -352,18 +308,15 @@ const path = require("path");
 // Serve static files from React build
 app.use(express.static(path.join(__dirname, "../build")));
 
+app.use("/api", (req, res) => {
+  res.status(404).json({ error: "API route not found" });
+});
+
 // ✅ Catch-all (VERY IMPORTANT - LAST)
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, "../build/index.html"));
 });
 
-/* ============================================================
-   HEALTH CHECK
-============================================================ */
-app.get("/", (req, res) => {
-  res.send("🚀 BNOC Automation Backend Running");
-});
-
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

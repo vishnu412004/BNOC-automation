@@ -10,10 +10,12 @@ function DeviceAnalysis() {
   const [days, setDays] = useState(30);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchDeviceHistory = async (selectedDays) => {
       setLoading(true);
+      setError("");
 
       try {
         const token = localStorage.getItem("token");
@@ -26,9 +28,18 @@ function DeviceAnalysis() {
         );
 
         const result = await response.json();
+
+        if (!response.ok) {
+          setData(null);
+          setError(result.error || "Failed to load device history");
+          setLoading(false);
+          return;
+        }
+
         setData(result);
         setLoading(false);
       } catch {
+        setError("Server error while loading device history");
         setLoading(false);
       }
     };
@@ -54,7 +65,7 @@ function DeviceAnalysis() {
 
           <div className="bg-white shadow-2xl rounded-2xl p-10 space-y-8">
             {/* Header */}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
               <h2 className="text-3xl font-bold text-blue-800">
                 Device Intelligence
               </h2>
@@ -76,6 +87,8 @@ function DeviceAnalysis() {
               <p className="text-blue-600 animate-pulse">
                 Loading Device Intelligence...
               </p>
+            ) : error ? (
+              <p className="text-red-600">{error}</p>
             ) : (
               data && (
                 <>
@@ -86,7 +99,7 @@ function DeviceAnalysis() {
                         {device.cmdb_ci?.display_value || "Device"}
                       </h3>
 
-                      <div className="grid grid-cols-4 gap-6 text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
                         <div>
                           <p className="opacity-70">Customer</p>
                           <p className="font-semibold">
@@ -119,7 +132,7 @@ function DeviceAnalysis() {
                   )}
 
                   {/* Metrics Section */}
-                  <div className="grid grid-cols-4 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <MetricCard
                       label="Total Incidents"
                       value={data.total}
@@ -170,7 +183,7 @@ function DeviceAnalysis() {
                     </h3>
 
                     <div className="space-y-4">
-                      {data.incidents.map((inc) => (
+                      {data.incidents.length ? data.incidents.map((inc) => (
                         <div
                           key={inc.sys_id}
                           className="border rounded-xl p-5 shadow hover:shadow-lg transition bg-gray-50"
@@ -199,7 +212,9 @@ function DeviceAnalysis() {
                             Opened: {inc.opened_at}
                           </p>
                         </div>
-                      ))}
+                      )) : (
+                        <p className="text-gray-500">No incident history found for this device.</p>
+                      )}
                     </div>
                   </div>
                 </>

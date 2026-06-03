@@ -4,7 +4,6 @@ import Dashboard from "./Pages/Dashboard";
 import DeviceAnalysis from "./Pages/DeviceAnalysis";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import IncidentTimeline from "./Pages/IncidentTimeline";
-import AIAssistant from "./Pages/AIAssistant";
 
 function App() {
   return (
@@ -21,7 +20,6 @@ function App() {
           }
         />
 
-        {/* NEW ROUTE - ADDED ONLY */}
         <Route
           path="/device-analysis/:deviceSysId"
           element={
@@ -35,14 +33,6 @@ function App() {
           element={
             <ProtectedRoute>
               <IncidentTimeline />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/ai-assistant/:incidentNumber"
-          element={
-            <ProtectedRoute>
-              <AIAssistant />
             </ProtectedRoute>
           }
         />
